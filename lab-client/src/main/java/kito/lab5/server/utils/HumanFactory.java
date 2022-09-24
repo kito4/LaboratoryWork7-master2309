@@ -2,6 +2,7 @@ package kito.lab5.server.utils;
 
 
 import kito.lab5.common.entities.Car;
+import kito.lab5.common.entities.enums.WeaponType;
 import kito.lab5.server.exceptions.EndOfFileException;
 import kito.lab5.common.entities.Coordinates;
 import kito.lab5.common.entities.HumanBeing;
@@ -50,6 +51,7 @@ public class HumanFactory {
             t1.setY(sc.nextInt());
             human.setCoordinates(t1);
             human.setCreationDate(ZonedDateTime.parse(ZonedDateTime.now().toString()));
+            human.setWeaponType(WeaponType.KNIFE);
             Car testcar=new Car();
             testcar.setCarname("temp");
             testcar.setCool(true);

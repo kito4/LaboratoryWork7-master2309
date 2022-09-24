@@ -41,7 +41,7 @@ public class CSVReader extends AbstractFileReader {
      * Метод, возвращающий массив прочитанных элементов коллекции из файла
      */
     @Override
-    public List<HumanBeing> getInfoFromFile() {
+    public List<HumanBeing> getHumanArray() {
         return humanArray;
     }
 
@@ -139,6 +139,7 @@ public class CSVReader extends AbstractFileReader {
             HashMap<String, String> newHuman;
 
             System.out.println(table);
+            peopleInfo.clear();
             while (table.next()) {
                 newHuman = new HashMap<>();
                 newHuman.put("name", table.getString("name"));
@@ -160,7 +161,6 @@ public class CSVReader extends AbstractFileReader {
 //            for (int j = 0; j < parameters.length; j++) {
 //                newHuman.put(parameters[j], humanInfo[j]);
 //            }
-                peopleInfo.clear();
                 peopleInfo.add(newHuman);
             }
 

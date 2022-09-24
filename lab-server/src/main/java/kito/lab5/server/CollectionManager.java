@@ -115,7 +115,7 @@ public class CollectionManager {
      * @param arrayOfPeople массив HumanBeing
      */
     public void fillWithArray(List<HumanBeing> arrayOfPeople) {
-
+        humanQueue.clear();
         for (HumanBeing human : arrayOfPeople) {
             Coordinates coor = new Coordinates();
 

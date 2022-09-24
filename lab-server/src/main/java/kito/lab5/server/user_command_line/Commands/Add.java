@@ -27,6 +27,7 @@ public class Add extends AbstractCommand {
 
 
 //                Config.getCollectionManager().addHuman(humanInfoInput.getNewHumanToInput());
+
                 return new SuccessMessage("adding human... Объект успешно добавлен в коллекцию");
             } catch (IllegalArgumentException e) {
                 return new ErrorMessage(e.getMessage());

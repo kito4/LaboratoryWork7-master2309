@@ -1,7 +1,6 @@
 package kito.lab5.server.abstractions;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +24,6 @@ public abstract class AbstractFileReader {
      * Абстрактный метод получения массива значений из файла
      * @return ArrayList<?> массив значений полученных из файла
      */
-    public abstract List<?> getInfoFromFile();
+    public abstract List<?> getHumanArray();
 
 }

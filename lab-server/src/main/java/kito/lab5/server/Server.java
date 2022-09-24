@@ -1,11 +1,10 @@
 package kito.lab5.server;
 
 import kito.lab5.server.csv_parser.CSVReader;
-import kito.lab5.server.utils.TextSender;
 
 import java.io.*;
 import java.net.ServerSocket;
-import java.net.Socket;
+
 public final class Server {
 
 
@@ -30,9 +29,9 @@ public final class Server {
 
 //            collectionFileReader.initializeFile("humans.csv");               // TODO 0709 Config.getFilePath());
             collectionFileReader.parseFile();
-            Config.getCollectionManager().fillWithArray(collectionFileReader.getInfoFromFile());
+            Config.getCollectionManager().fillWithArray(collectionFileReader.getHumanArray());
 
-            ss = new ServerSocket(4512);
+            ss = new ServerSocket(4514);
 //            Socket s= ss.accept();
 
 

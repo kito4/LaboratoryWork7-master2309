@@ -41,7 +41,7 @@ public class ExecutableFileReader extends AbstractFileReader {
      * Метод, возвращающий массив прочитанных элементов коллекции из файла
      */
     @Override
-    public ArrayList<String> getInfoFromFile() {
+    public ArrayList<String> getHumanArray() {
         return commands;
     }
 }

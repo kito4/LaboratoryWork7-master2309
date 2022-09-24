@@ -19,6 +19,8 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Scanner;
 
+import static kito.lab5.server.Server.collectionFileReader;
+
 /**
  * Класс отвечающий за работу с пользователем в интерактивном режиме
  */
@@ -75,23 +77,25 @@ public class CommandListener {
 //            class.forName("jdbc")
                         Random r = new Random();        // TODO remove
                         conn = DriverManager.getConnection("jdbc:postgresql://pg:5432/studs");       // TODO CHANGE
-                        PreparedStatement ps = conn.prepareStatement("INSERT INTO studs VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
-                        ps.setString(1, "'" + 1 + "'");      // TODO CHANGE RAndom
-                        ps.setString(2, "'" + request.getHuman().getName() + "'");
-                        ps.setString(3, "'" + request.getHuman().getCoordinates().getX() + "'");
-                        ps.setString(4, "'" + request.getHuman().getCoordinates().getY() + "'");
-                        ps.setString(5, "'" + request.getHuman().getCreationDate() + "'");
-                        ps.setString(6, "'" + request.getHuman().isHasToothpick() + "'");
-                        ps.setString(7, "'" + request.getHuman().getImpactSpeed() + "'");
-                        ps.setString(8, "'" + request.getHuman().getSoundtrackName() + "'");
-                        ps.setString(9, "'" + request.getHuman().getMinutesOfWaiting() + "'");
-                        ps.setString(10, "'" + request.getHuman().getWeaponType() + "'");
-                        ps.setString(11, "'" + request.getHuman().getCar().isCool() + "'");
-                        ps.setString(12, "'" + request.getHuman().getCar().getCarname() + "'");
-                        ps.setString(13, "'" + request.getHuman().getRealHero() + "'");
+                        PreparedStatement ps = conn.prepareStatement("INSERT INTO s334582 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        ps.setInt(1,1);      // TODO CHANGE RAndom
+                        ps.setString(2,  request.getHuman().getName());
+                        ps.setDouble(3, request.getHuman().getCoordinates().getX());
+                        ps.setInt(4, request.getHuman().getCoordinates().getY());
+                        ps.setString(5,   request.getHuman().getCreationDate().toString() );
+                        ps.setBoolean(6, request.getHuman().isHasToothpick());
+                        ps.setDouble(7, request.getHuman().getImpactSpeed());
+                        ps.setString(8,  request.getHuman().getSoundtrackName());
+                        ps.setDouble(9, request.getHuman().getMinutesOfWaiting());
+                        ps.setString(10,  request.getHuman().getWeaponType().toString() );
+                        ps.setBoolean(11, request.getHuman().getCar().isCool());
+                        ps.setString(12,  request.getHuman().getCar().getCarname());
+                        ps.setBoolean(13, request.getHuman().getRealHero());
                         ps.execute();
 
                         reader.parseFile();
+                        System.out.println("human array is :" + collectionFileReader.getHumanArray());
+                        Config.getCollectionManager().fillWithArray(collectionFileReader.getHumanArray());
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -122,6 +126,7 @@ public class CommandListener {
                         ps.execute();
 
                         reader.parseFile();
+                        Config.getCollectionManager().fillWithArray(collectionFileReader.getHumanArray());
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
