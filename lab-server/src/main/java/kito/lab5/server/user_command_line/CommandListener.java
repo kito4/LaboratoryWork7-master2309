@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ForkJoinPool;
 
 import static kito.lab5.server.Server.collectionFileReader;
 
@@ -27,19 +29,21 @@ import static kito.lab5.server.Server.collectionFileReader;
 public class CommandListener {
 
     private boolean isRunning;
-    private final InputStream commandsInputStream;                  // TODO 0709 REPLACED BY INPUTSTREAM
+    private final InputStream commandsInputStream;
     private TextSender sender;
     boolean userExists;
     boolean passExists;
+    static ForkJoinPool forkJoinPool = new ForkJoinPool();
+    String aMessage;
 
     String[] inputString;
 
     /**
      * Конструктор
      */
-    public CommandListener(InputStream inputStream, TextSender sender) {                   // TODO 0709 REPLACED BY INPUTSTREAM
+    public CommandListener(InputStream inputStream, TextSender sender) {
 //        TextSender.printText("Добро пожаловать в интерактивный режим работы с коллекцией, " +
-//                "введите help, чтобы узнать информацию о доступных командах"); //   TODO edit 0709
+//                "введите help, чтобы узнать информацию о доступных командах");
         commandsInputStream = inputStream;
         this.sender = sender;
     }
@@ -56,107 +60,124 @@ public class CommandListener {
                 byte[] objectBytes = new byte[4096];
                 commandsInputStream.read(objectBytes);
 
-                        // TODO 0709: below lines removed
-//                    ByteArrayOutputStream buffer = new ByteArrayOutputStream(); // TODO
-//                    int toRead;
-//                    byte[] bytes = new byte[4096];
-//                    while ((toRead = commandsInputStream.read(bytes,0,bytes.length)) != -1) {
-//                        buffer.write(bytes,0,toRead);
-//                    }
-//                    byte[] objectBytes = buffer.toByteArray();
-                Request request = Serializer.deSerializeRequest(objectBytes);
-                System.out.println(request);
+                forkJoinPool.submit(() -> {
 
-                // TODO MANDATORY CHECK USER AND PASS
-
-                if (request.getCommandNameAndArguments().equals("addfinal")) {
-//                    Config.getCollectionManager().addHuman(request.getHuman());
-
-                    Connection conn = null;
+                    // TODO 0709: below lines removed
+                    //                    ByteArrayOutputStream buffer = new ByteArrayOutputStream(); // TODO
+                    //                    int toRead;
+                    //                    byte[] bytes = new byte[4096];
+                    //                    while ((toRead = commandsInputStream.read(bytes,0,bytes.length)) != -1) {
+                    //                        buffer.write(bytes,0,toRead);
+                    //                    }
+                    //                    byte[] objectBytes = buffer.toByteArray();
+                    Request request = null;
                     try {
-//            class.forName("jdbc")
-                        Random r = new Random();        // TODO remove
-                        conn = DriverManager.getConnection("jdbc:postgresql://pg:5432/studs");       // TODO CHANGE
-                        PreparedStatement ps = conn.prepareStatement("INSERT INTO s334582 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
-                        ps.setInt(1,1);      // TODO CHANGE RAndom
-                        ps.setString(2,  request.getHuman().getName());
-                        ps.setDouble(3, request.getHuman().getCoordinates().getX());
-                        ps.setInt(4, request.getHuman().getCoordinates().getY());
-                        ps.setString(5,   request.getHuman().getCreationDate().toString() );
-                        ps.setBoolean(6, request.getHuman().isHasToothpick());
-                        ps.setDouble(7, request.getHuman().getImpactSpeed());
-                        ps.setString(8,  request.getHuman().getSoundtrackName());
-                        ps.setDouble(9, request.getHuman().getMinutesOfWaiting());
-                        ps.setString(10,  request.getHuman().getWeaponType().toString() );
-                        ps.setBoolean(11, request.getHuman().getCar().isCool());
-                        ps.setString(12,  request.getHuman().getCar().getCarname());
-                        ps.setBoolean(13, request.getHuman().getRealHero());
-                        ps.execute();
-
-                        reader.parseFile();
-                        System.out.println("human array is :" + collectionFileReader.getHumanArray());
-                        Config.getCollectionManager().fillWithArray(collectionFileReader.getHumanArray());
-                    } catch (SQLException e) {
-                        e.printStackTrace();
+                        request = Serializer.deSerializeRequest(objectBytes);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
                     }
+                    System.out.println(request);
 
-                    // id,name,X,Y,creationDate,hasToothpick,impactSpeed,soundtrackName,MinutesOfWaiting,weaponType,cool,carname,RealHero,creator
+                    // TODO MANDATORY CHECK USER AND PASS
+
+                    if (request.getCommandNameAndArguments().equals("addfinal")) {
+                        //                    Config.getCollectionManager().addHuman(request.getHuman());
+
+                        Connection conn = null;
+                        try {
+                            //            class.forName("jdbc")
+                            Random r = new Random();        // TODO remove
+                            conn = DriverManager.getConnection("jdbc:postgresql://pg:5432/studs");       // TODO CHANGE
+                            PreparedStatement ps = conn.prepareStatement("INSERT INTO s334582 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                            ps.setInt(1, 1);      // TODO CHANGE RAndom
+                            ps.setString(2, request.getHuman().getName());
+                            ps.setDouble(3, request.getHuman().getCoordinates().getX());
+                            ps.setInt(4, request.getHuman().getCoordinates().getY());
+                            ps.setString(5, request.getHuman().getCreationDate().toString());
+                            ps.setBoolean(6, request.getHuman().isHasToothpick());
+                            ps.setDouble(7, request.getHuman().getImpactSpeed());
+                            ps.setString(8, request.getHuman().getSoundtrackName());
+                            ps.setDouble(9, request.getHuman().getMinutesOfWaiting());
+                            ps.setString(10, request.getHuman().getWeaponType().toString());
+                            ps.setBoolean(11, request.getHuman().getCar().isCool());
+                            ps.setString(12, request.getHuman().getCar().getCarname());
+                            ps.setBoolean(13, request.getHuman().getRealHero());
+                            ps.execute();
+
+                            reader.parseFile();
+                            //                        System.out.println("human array is :" + collectionFileReader.getHumanArray());
+                            Config.getCollectionManager().fillWithArray(collectionFileReader.getHumanArray());
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+
+                        // id,name,X,Y,creationDate,hasToothpick,impactSpeed,soundtrackName,MinutesOfWaiting,weaponType,cool,carname,RealHero,creator
 
 
                         sender.sendMessage("Человек успешно добавлен!");
-                } else if (request.getCommandNameAndArguments().equals("updatefinal")) {
-                    Connection conn = null;
-                    try {
-//            class.forName("jdbc")
-                        conn = DriverManager.getConnection("jdbc:postgresql:lab-server//humans.mkd");
-                        PreparedStatement ps = conn.prepareStatement("INSERT INTO studs (name,x,y,creationDate,hasToothpick,impactSpeed, " +
-                                "soundtrackName,minutesOfWaiting,weaponType,cool,carName,realHero) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) WHERE id = " + request.getHuman().getId());
-                        ps.setString(2, "'" + request.getHuman().getName() + "'");
-                        ps.setString(3, "'" + request.getHuman().getCoordinates().getX() + "'");
-                        ps.setString(4, "'" + request.getHuman().getCoordinates().getY() + "'");
-                        ps.setString(5, "'" + request.getHuman().getCreationDate() + "'");
-                        ps.setString(6, "'" + request.getHuman().isHasToothpick() + "'");
-                        ps.setString(7, "'" + request.getHuman().getImpactSpeed() + "'");
-                        ps.setString(8, "'" + request.getHuman().getSoundtrackName() + "'");
-                        ps.setString(9, "'" + request.getHuman().getMinutesOfWaiting() + "'");
-                        ps.setString(10, "'" + request.getHuman().getWeaponType() + "'");
-                        ps.setString(11, "'" + request.getHuman().getCar().isCool() + "'");
-                        ps.setString(12, "'" + request.getHuman().getCar().getCarname() + "'");
-                        ps.setString(13, "'" + request.getHuman().getRealHero() + "'");
-                        ps.execute();
+                    } else if (request.getCommandNameAndArguments().equals("updatefinal")) {
+                        Connection conn = null;
+                        try {
+                            //            class.forName("jdbc")
+                            conn = DriverManager.getConnection("jdbc:postgresql:lab-server//humans.mkd");
+                            PreparedStatement ps = conn.prepareStatement("INSERT INTO studs (name,x,y,creationDate,hasToothpick,impactSpeed, " +
+                                    "soundtrackName,minutesOfWaiting,weaponType,cool,carName,realHero) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) WHERE id = " + request.getHuman().getId());
+                            ps.setString(2, "'" + request.getHuman().getName() + "'");
+                            ps.setString(3, "'" + request.getHuman().getCoordinates().getX() + "'");
+                            ps.setString(4, "'" + request.getHuman().getCoordinates().getY() + "'");
+                            ps.setString(5, "'" + request.getHuman().getCreationDate() + "'");
+                            ps.setString(6, "'" + request.getHuman().isHasToothpick() + "'");
+                            ps.setString(7, "'" + request.getHuman().getImpactSpeed() + "'");
+                            ps.setString(8, "'" + request.getHuman().getSoundtrackName() + "'");
+                            ps.setString(9, "'" + request.getHuman().getMinutesOfWaiting() + "'");
+                            ps.setString(10, "'" + request.getHuman().getWeaponType() + "'");
+                            ps.setString(11, "'" + request.getHuman().getCar().isCool() + "'");
+                            ps.setString(12, "'" + request.getHuman().getCar().getCarname() + "'");
+                            ps.setString(13, "'" + request.getHuman().getRealHero() + "'");
+                            ps.execute();
 
-                        reader.parseFile();
-                        Config.getCollectionManager().fillWithArray(collectionFileReader.getHumanArray());
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    String line = request.getCommandNameAndArguments();
-                    System.out.println(line);
-//                if ("exit".equals(line)) {
-//                    isRunning = false;
-//                    continue;
-//
-
-                    inputString = SmartSplitter.smartSplit(line).toArray(new String[0]);
-
-                    userExists = false;
-                    passExists = false;
-                    checkUserAndPass(inputString[inputString.length-2],inputString[inputString.length-1]);
-
-                    if (!userExists) {
-                        sender.sendMessage("No such username, try again");
-                    } else if (!passExists) {
-                        sender.sendMessage("Password incorrect, try again");
+                            reader.parseFile();
+                            Config.getCollectionManager().fillWithArray(collectionFileReader.getHumanArray());
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
                     } else {
-                        String commandName = inputString[0].toLowerCase();
-                        String[] commandArgs = Arrays.copyOfRange(inputString, 1, inputString.length);
-                        sender.sendMessage(((AbstractMessage) Config.getCommandManager().execute(commandName.toLowerCase(), commandArgs, sender)).getMessage());
+                        String line = request.getCommandNameAndArguments();
+                        System.out.println(line);
+                        //                if ("exit".equals(line)) {
+                        //                    isRunning = false;
+                        //                    continue;
+                        //
+
+                        inputString = SmartSplitter.smartSplit(line).toArray(new String[0]);
+
+                        userExists = false;
+                        passExists = false;
+                        checkUserAndPass(inputString[inputString.length - 2], inputString[inputString.length - 1]);
+
+                        if (!userExists) {
+                            sender.sendMessage("No such username, try again");
+                        } else if (!passExists) {
+                            sender.sendMessage("Password incorrect, try again");
+                        } else {
+
+                            String commandName = inputString[0].toLowerCase();
+                            String[] commandArgs = Arrays.copyOfRange(inputString, 1, inputString.length);
+                            sender.sendMessage(((AbstractMessage) Config.getCommandManager().execute(commandName.toLowerCase(), commandArgs, sender)).getMessage());
+//                            aMessage = ((AbstractMessage) Config.getCommandManager().execute(commandName.toLowerCase(), commandArgs, sender)).getMessage()
+                        }
                     }
-                }
+                });
+
+//                forkJoinPool.submit(() -> {
+//                   sender.sendMessage(aMessage);
+//                });
+
             } catch (NoSuchElementException e) {
                 break;
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }

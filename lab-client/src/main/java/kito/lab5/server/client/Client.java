@@ -34,7 +34,7 @@ public final class Client {
         Scanner scanner = new Scanner(System.in);
         HumanFactory humanFactory = new HumanFactory(new ScannerFieldsGetter(scanner), new ReaderFieldsGetter(null));
         Selector selector = Selector.open();
-        SocketAddress clientAddress = new InetSocketAddress(InetAddress.getLocalHost(), 4514);
+        SocketAddress clientAddress = new InetSocketAddress(InetAddress.getLocalHost(), 4515);
         SocketChannel clientChannel = SocketChannel.open(clientAddress);
         System.out.println("Connected!");
         System.out.println("введите help чтобы увидеть список допустимых команд.");

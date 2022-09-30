@@ -31,7 +31,7 @@ public final class Server {
             collectionFileReader.parseFile();
             Config.getCollectionManager().fillWithArray(collectionFileReader.getHumanArray());
 
-            ss = new ServerSocket(4514);
+            ss = new ServerSocket(4515);
 //            Socket s= ss.accept();
 
 
